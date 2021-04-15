@@ -1,0 +1,3 @@
+include ':locationBackground'
+include ':app'
+rootProject.name = "BackgroundLocation"
