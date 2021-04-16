@@ -29,6 +29,9 @@ interface GeocodeBuilder {
     fun getGeocoder(): Geocoder
 }
 
+/**
+ * Class that manages to retrieve the current user location
+ */
 class LocationHandler private constructor(
     private val fusedLocationClient: FusedLocationProviderClient,
     private val locationManager: LocationManager,
@@ -41,12 +44,19 @@ class LocationHandler private constructor(
     companion object {
         const val REQUEST_ID = 1000
 
+        /**
+         * Check if we have a @param permission
+         */
         private fun checkPermission(context: Context, permission: String) =
             ActivityCompat.checkSelfPermission(
                 context,
                 permission
             ) == PackageManager.PERMISSION_GRANTED
 
+        /**
+         * Check all permissions to access the location
+         * @return true if we have background or fine permission
+         */
         private fun checkPermissions(context: Context): Boolean =
             checkPermission(context, ACCESS_BACKGROUND_LOCATION)
                     || checkPermission(context, permission.ACCESS_FINE_LOCATION)
@@ -135,7 +145,6 @@ class LocationHandler private constructor(
 
 
     private val actionName = javaClass.name
-    private lateinit var locationRequest: LocationRequest
 
     //each time we set a new value to the location, calls sendIntent that sends a broadcast
     private var location: Location? = null
