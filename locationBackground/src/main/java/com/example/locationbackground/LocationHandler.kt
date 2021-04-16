@@ -216,7 +216,7 @@ class LocationHandler private constructor(
      * Return the current city
      */
     private fun getCity(): String? {
-        var city = ""
+        var city: String
         location?.let {
             val result = geocodeBuilder.getGeocoder()
                 .getFromLocation(it.latitude, it.longitude, 1)
@@ -230,7 +230,7 @@ class LocationHandler private constructor(
      * Return the current country name
      */
     private fun getCountry(): String? {
-        var country = ""
+        var country: String
         location?.let {
             val result = geocodeBuilder.getGeocoder()
                 .getFromLocation(it.latitude, it.longitude, 1)
@@ -241,17 +241,4 @@ class LocationHandler private constructor(
         return null
     }
 
-    /**
-     * Return the current latitude
-     */
-    fun getLatitude(): Double? {
-        return location?.latitude
-    }
-
-    /**
-     * Return the current longitude
-     */
-    fun getLongitude(): Double? {
-        return location?.longitude
-    }
 }
