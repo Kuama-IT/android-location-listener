@@ -26,7 +26,7 @@ interface LocationGetter {
 }
 
 interface GeocodeBuilder {
-    fun getGeocoder():Geocoder
+    fun getGeocoder(): Geocoder
 }
 
 class LocationHandler private constructor(
@@ -121,8 +121,8 @@ class LocationHandler private constructor(
                                 )
                         }
                     },
-                    geocodeBuilder = object : GeocodeBuilder{
-                        override fun getGeocoder() :Geocoder {
+                    geocodeBuilder = object : GeocodeBuilder {
+                        override fun getGeocoder(): Geocoder {
                             return Geocoder(it, Locale.getDefault())
                         }
                     },
@@ -170,6 +170,7 @@ class LocationHandler private constructor(
         }
 
         broadcaster.broadcast(intent)
+        //Log.d("Location", "city ${getCity()}")
     }
 
 
@@ -180,6 +181,7 @@ class LocationHandler private constructor(
      */
     @SuppressLint("MissingPermission")
     private fun getLastKnownLocation(): Location? {
+        getLocation()
         fusedLocationClient.lastLocation.addOnSuccessListener { task: Location?
             ->
             //if task is not null assign the new value of the location
@@ -240,5 +242,6 @@ class LocationHandler private constructor(
 
         return null
     }
+
 
 }
