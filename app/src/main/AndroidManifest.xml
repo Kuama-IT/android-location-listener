@@ -3,6 +3,8 @@
     package="com.example.backgroundlocation">
 
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -28,7 +30,9 @@
             </intent-filter>
         </activity>
 
-        <service android:name="com.example.locationbackground.BackgroundService" />
+        <service
+            android:name="com.example.locationbackground.BackgroundService"
+            android:foregroundServiceType="location"/>
     </application>
 
 </manifest>

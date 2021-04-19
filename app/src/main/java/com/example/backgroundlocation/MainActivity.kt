@@ -22,12 +22,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         //registra il ricevitore broadcast per ricevere i messaggi broadcast inviati dal Service
-        val intentFilter = IntentFilter("com.example.locationbackground.LocationHandler")
+        val onLocationHandlerIntent = IntentFilter("com.example.locationbackground.LocationHandler")
         val broadcastReceiver = MyBroadcastReceiver()
-        registerReceiver(broadcastReceiver, intentFilter)
+        registerReceiver(broadcastReceiver, onLocationHandlerIntent)
 
         //debug with the button
-        val intent = Intent(this, BackgroundService::class.java)
+        val backgroundLocationIntent = Intent(this, BackgroundService::class.java)
 
         val startButton = findViewById<Button>(R.id.bt_location)
         startButton.setOnClickListener {
@@ -35,7 +35,7 @@ class MainActivity : AppCompatActivity() {
             //invia Intent per far iniziare il service BackgroundService
             if (checkGPSActive()) {
                 if (checkPermission()) {
-                    intent.also { startService(it) }
+                    startService(backgroundLocationIntent)
                 } else
                     getPermission()
             } else
@@ -45,7 +45,7 @@ class MainActivity : AppCompatActivity() {
 
         val stopButton = findViewById<Button>(R.id.bt_stop)
         stopButton.setOnClickListener {
-            intent.also { stopService(it) }
+            stopService(backgroundLocationIntent)
         }
 
 
@@ -74,6 +74,10 @@ class MainActivity : AppCompatActivity() {
                 )
     }
 
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+    }
 
     /**
      * Check if the GPS services are active

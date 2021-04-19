@@ -1,28 +1,29 @@
 package com.example.locationbackground
 
-import android.Manifest.*
+import android.Manifest.permission
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
 import android.annotation.SuppressLint
-import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.location.Geocoder
 import android.location.Location
 import android.location.LocationManager
-import android.util.Log
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import com.google.android.gms.location.*
-import java.lang.Exception
+import io.reactivex.rxjava3.core.BackpressureStrategy
+import io.reactivex.rxjava3.core.Flowable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
 
 interface Broadcaster {
     fun broadcast(intent: Intent)
 }
 
+data class GeocodedLocation(val location: Location, val city: String?, val country: String?)
+
 interface LocationGetter {
-    fun sendRequest()
+    fun sendRequest(): Flowable<Location>
 }
 
 interface GeocodeBuilder {
@@ -34,7 +35,6 @@ interface GeocodeBuilder {
  */
 class LocationHandler private constructor(
     private val fusedLocationClient: FusedLocationProviderClient,
-    private val locationManager: LocationManager,
     private val broadcaster: Broadcaster,
     private val locationGetter: LocationGetter,
     private val geocodeBuilder: GeocodeBuilder,
@@ -102,7 +102,6 @@ class LocationHandler private constructor(
 
                 return LocationHandler(
                     LocationServices.getFusedLocationProviderClient(it),
-                    locationManager = locationManager,
                     broadcaster = object : Broadcaster {
                         override fun broadcast(intent: Intent) {
                             it.sendBroadcast(intent)
@@ -117,18 +116,23 @@ class LocationHandler private constructor(
                             }
 
                         @SuppressLint("MissingPermission")
-                        override fun sendRequest() {
-                            val intent = Intent(it, it::class.java)
+                        override fun sendRequest(): Flowable<Location> {
+
+                            val subject: BehaviorSubject<Location> = BehaviorSubject.create()
+
                             LocationServices.getFusedLocationProviderClient(it)
                                 .requestLocationUpdates(
                                     locationRequest,
-                                    PendingIntent.getService(
-                                        it,
-                                        REQUEST_ID,
-                                        intent,
-                                        PendingIntent.FLAG_UPDATE_CURRENT
-                                    )
+                                    object : LocationCallback() {
+                                        override fun onLocationResult(result: LocationResult) {
+                                            super.onLocationResult(result)
+                                            subject.onNext(result.lastLocation)
+                                        }
+                                    },
+                                    null
                                 )
+
+                            return subject.toFlowable(BackpressureStrategy.LATEST)
                         }
                     },
                     geocodeBuilder = object : GeocodeBuilder {
@@ -160,9 +164,7 @@ class LocationHandler private constructor(
     /**
      * Retrieve the last known location
      */
-    fun sendLocation() {
-        getLastKnownLocation()
-    }
+    fun readLocation(): Flowable<GeocodedLocation> = getLocation()
 
     /**
      * Send a broadcast message containing the latitude, longitude, city and country
@@ -174,8 +176,11 @@ class LocationHandler private constructor(
             flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
             putExtra("latitude", location?.latitude)
             putExtra("longitude", location?.longitude)
-            putExtra("city", getCity())
-            putExtra("country", getCountry())
+            location?.let {
+                putExtra("city", getCity(it))
+                putExtra("country", getCountry(it))
+            }
+
         }
 
         broadcaster.broadcast(intent)
@@ -189,8 +194,7 @@ class LocationHandler private constructor(
      * No need to check for permissions, see [Builder.build]
      */
     @SuppressLint("MissingPermission")
-    private fun getLastKnownLocation(): Location? {
-        getLocation()
+    fun getLastKnownLocation() {
         fusedLocationClient.lastLocation.addOnSuccessListener { task: Location?
             ->
             //if task is not null assign the new value of the location
@@ -204,52 +208,53 @@ class LocationHandler private constructor(
                 getLocation()
             }
 
+
         }
 
         fusedLocationClient.lastLocation.addOnFailureListener { error: Exception ->
             getLocation()
+
             //toast for errors
             onError?.invoke(error)
         }
 
-        return location
     }
 
 
     /**
      * Send the request to get the location
      */
-    private fun getLocation() {
-        locationGetter.sendRequest()
-    }
+    private fun getLocation() = locationGetter
+        .sendRequest()
+        .map { location ->
+            GeocodedLocation(
+                location = location,
+                city = getCity(location),
+                country = getCountry(location)
+            )
+        }
 
     /**
      * Return the current city
      */
-    private fun getCity(): String? {
+    private fun getCity(location: Location): String? {
         var city: String
-        location?.let {
-            val result = geocodeBuilder.getGeocoder()
-                .getFromLocation(it.latitude, it.longitude, 1)
-            city = result[0].locality
-            return city
-        }
-        return null
+
+        val result = geocodeBuilder.getGeocoder()
+            .getFromLocation(location.latitude, location.longitude, 1)
+        city = result[0].locality
+        return city
     }
 
     /**
      * Return the current country name
      */
-    private fun getCountry(): String? {
-        var country: String
-        location?.let {
-            val result = geocodeBuilder.getGeocoder()
-                .getFromLocation(it.latitude, it.longitude, 1)
-            country = result[0].countryName
-            return country
-        }
+    private fun getCountry(location: Location): String? {
 
-        return null
+        val result = geocodeBuilder.getGeocoder()
+            .getFromLocation(location.latitude, location.longitude, 1)
+        return result.firstOrNull()?.countryName
+
     }
 
 
