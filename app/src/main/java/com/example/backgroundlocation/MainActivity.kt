@@ -12,10 +12,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.locationbackground.BackgroundService
 import com.example.locationbackground.LocationHandler
+import com.example.locationbackground.MyBroadcastReceiver
 
 
 class MainActivity : AppCompatActivity() {
 
+    //debug with the button
+    private lateinit var backgroundLocationIntent: Intent
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -26,8 +29,7 @@ class MainActivity : AppCompatActivity() {
         val broadcastReceiver = MyBroadcastReceiver()
         registerReceiver(broadcastReceiver, onLocationHandlerIntent)
 
-        //debug with the button
-        val backgroundLocationIntent = Intent(this, BackgroundService::class.java)
+        backgroundLocationIntent = Intent(this, BackgroundService::class.java)
 
         val startButton = findViewById<Button>(R.id.bt_location)
         startButton.setOnClickListener {
@@ -88,5 +90,12 @@ class MainActivity : AppCompatActivity() {
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    /**
+     * When the app is destroyed, the service is stopped also
+     */
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

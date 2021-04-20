@@ -1,16 +1,17 @@
-package com.example.backgroundlocation
+package com.example.locationbackground
 
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.util.Log
-import android.widget.Toast
 
 /**
  * Custom broadcast receiver that displays the location information retrieved from the
  * LocationHandler.kt broadcast in the console log
  */
 class MyBroadcastReceiver : BroadcastReceiver() {
+
+    // net.kuama.android. ....
 
     override fun onReceive(context: Context, intent: Intent) {
         // This method is called when the BroadcastReceiver is receiving an Intent broadcast.
@@ -23,5 +24,8 @@ class MyBroadcastReceiver : BroadcastReceiver() {
             "Location",
             "latitude:${latitude}, \nlongitude:${longitude}, \ncity:{$city}, \ncountry:{$country}"
         )
+
+        val intent = Intent(context, BackgroundService::class.java)
+        context.stopService(intent)
     }
 }
