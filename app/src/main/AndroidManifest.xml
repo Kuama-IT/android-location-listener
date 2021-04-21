@@ -14,7 +14,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BackgroundLocation">
         <receiver
-            android:name=".MyBroadcastReceiver"
+            android:name="com.example.locationbackground.MyBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
