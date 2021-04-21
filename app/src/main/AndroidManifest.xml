@@ -18,14 +18,14 @@
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="com.example.locationbackground.LocationHandler" />
+                <action android:name="net.kuama.android.backgroundLocation.BackgroundService" />
             </intent-filter>
         </receiver>
         <receiver android:name="net.kuama.android.backgroundLocation.LocationBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="net.kuama.android.backgroundLocation.BackgroundService"/>
+                <action android:name="net.kuama.android.backgroundLocation.LocationHandler"/>
             </intent-filter>
         </receiver>
 

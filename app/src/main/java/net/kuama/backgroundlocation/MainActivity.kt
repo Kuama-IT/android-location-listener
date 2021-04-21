@@ -2,7 +2,6 @@ package net.kuama.backgroundlocation
 
 import android.content.Context
 import android.content.Intent
-import android.content.IntentFilter
 import android.content.pm.PackageManager
 import android.location.LocationManager
 import android.os.Bundle
@@ -13,7 +12,6 @@ import androidx.core.app.ActivityCompat
 import com.example.backgroundlocation.R
 import net.kuama.android.LocationHandler
 import net.kuama.android.backgroundLocation.BackgroundService
-import net.kuama.android.backgroundLocation.MyBroadcastReceiver
 
 
 class MainActivity : AppCompatActivity() {
@@ -25,16 +23,11 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        //registra il ricevitore broadcast per ricevere i messaggi broadcast inviati dal Service
-        val onLocationHandlerIntent = IntentFilter("com.example.locationbackground.LocationHandler")
-        val broadcastReceiver = MyBroadcastReceiver()
-        registerReceiver(broadcastReceiver, onLocationHandlerIntent)
 
         backgroundLocationIntent = Intent(this, BackgroundService::class.java)
 
         val startButton = findViewById<Button>(R.id.bt_location)
         startButton.setOnClickListener {
-//            handler.sendLocation()
             //invia Intent per far iniziare il service BackgroundService
             if (checkGPSActive()) {
                 if (checkPermission()) {
@@ -78,10 +71,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
     /**
      * Check if the GPS services are active
      */
@@ -93,10 +82,4 @@ class MainActivity : AppCompatActivity() {
                 locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
-    /**
-     * When the app is destroyed, the service is stopped also
-     */
-    override fun onDestroy() {
-        super.onDestroy()
-    }
 }

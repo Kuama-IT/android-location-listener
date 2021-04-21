@@ -2,6 +2,7 @@ package net.kuama.android
 
 import android.Manifest.permission
 import android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
@@ -50,8 +51,8 @@ class LocationHandler private constructor(
          * @return true if we have background or fine permission
          */
         private fun checkPermissions(context: Context): Boolean =
-            checkPermission(context, ACCESS_BACKGROUND_LOCATION)
-                    || checkPermission(context, permission.ACCESS_FINE_LOCATION)
+            checkPermission(context, ACCESS_FINE_LOCATION)
+                    || checkPermission(context, ACCESS_BACKGROUND_LOCATION)
 
         /**
          * Check if the GPS services are active
@@ -62,6 +63,9 @@ class LocationHandler private constructor(
         }
     }
 
+    /**
+     * Inner builder class that creates the LocationHandler object
+     */
     class Builder {
 
         private var context: Context? = null
@@ -122,16 +126,13 @@ class LocationHandler private constructor(
         }
 
 
-    var accuracy: Float? = null
-
-
     /**
      * Retrieve the last known location
      */
     fun readLocation(): Flowable<GeocodedLocation> = getLocation()
 
     /**
-     * Send a broadcast message containing the latitude, longitude, city and country
+     * Send a broadcast message containing the latitude, longitude
      */
     private fun sendIntent() {
 
@@ -143,41 +144,7 @@ class LocationHandler private constructor(
         }
 
         broadcaster.broadcast(intent)
-        //Log.d("Location", "city ${getCity()}")
     }
-
-
-    /**
-     * Return the last known location
-     *
-     * No need to check for permissions, see [Builder.build]
-     */
-    @SuppressLint("MissingPermission")
-    fun getLastKnownLocation() {
-        fusedLocationClient.lastLocation.addOnSuccessListener { task: Location?
-            ->
-            //if task is not null assign the new value of the location
-            if (task != null) {
-                location = task
-                //set accuracy
-                if (accuracy != null)
-                    task.accuracy = accuracy as Float
-            } else {
-                //retrieve new value of the location
-                getLocation()
-            }
-
-
-        }
-
-        fusedLocationClient.lastLocation.addOnFailureListener { error: Exception ->
-            getLocation()
-
-            onError?.invoke(error)
-        }
-
-    }
-
 
     /**
      * Send the request to get the location

@@ -68,6 +68,11 @@ class BackgroundService : Service() {
         return START_STICKY
     }
 
+    /**
+     * Called when the service is being stopped
+     * Send a broadcast to MyBroadcastReceiver.kt and stops the subscription
+     * so it won't continue to receive locations
+     */
     private fun stopReadingLocation() {
         val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         service.cancel(NOTIFICATION_ID)
@@ -103,7 +108,7 @@ class BackgroundService : Service() {
             .setContentTitle(getText(R.string.notification_title))
             .setContentText(getText(R.string.notification_message))
             .setSmallIcon(R.drawable.ic_location_on)
-            .addAction(R.drawable.ic_location_off, "Stop", pendingIntent)
+            .addAction(R.drawable.ic_location_off, getText(R.string.stop), pendingIntent)
             .setOngoing(true)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             builder.apply {
