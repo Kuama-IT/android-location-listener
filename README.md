@@ -29,20 +29,18 @@ How to use
         <service
             android:name="net.kuama.android.backgroundLocation.BackgroundService"
             android:foregroundServiceType="location" />
-            
-2.Ask permissions for retrieving the Location in your Manifest file.
 
-      <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-      <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-      <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    
-3.Check within your code that the user granted the permissions
+2. Check within your code that the user granted the permissions for 
+   android.permission.ACCESS_FINE_LOCATION, if not ask for the permissions.
 
-4.Launch ASAP the service with an Intent
+3. Launch ASAP the service with an Intent
+
 
       val backgroundLocationIntent = Intent(this, BackgroundService::class.java)
       startService(backgroundLocationIntent)
-    
-5.To modify the behavior of the receiver, edit the onReceive() method in LocationBroadcastReceiver.kt
 
-6.When you need to stop the service, simply call stopService(backgroundLocationIntent)
+    
+4. To modify the behavior of the receiver, edit the onReceive() method in LocationBroadcastReceiver.kt
+
+
+5. When you need to stop the service, simply call stopService(backgroundLocationIntent)

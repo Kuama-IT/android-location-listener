@@ -52,7 +52,6 @@ class LocationHandler private constructor(
          */
         private fun checkPermissions(context: Context): Boolean =
             checkPermission(context, ACCESS_FINE_LOCATION)
-                    || checkPermission(context, ACCESS_BACKGROUND_LOCATION)
 
         /**
          * Check if the GPS services are active

@@ -53,21 +53,16 @@ class MainActivity : AppCompatActivity() {
     private fun getPermission() {
         ActivityCompat.requestPermissions(
             this, arrayOf(
-                android.Manifest.permission.ACCESS_FINE_LOCATION,
-                android.Manifest.permission.ACCESS_BACKGROUND_LOCATION
+                android.Manifest.permission.ACCESS_FINE_LOCATION
             ), LocationHandler.REQUEST_ID
         )
     }
 
     fun checkPermission(): Boolean {
 
-        return (ActivityCompat.checkSelfPermission(
-            this, android.Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED
-                || ActivityCompat.checkSelfPermission(
+        return ActivityCompat.checkSelfPermission(
             this, android.Manifest.permission.ACCESS_FINE_LOCATION
         ) == PackageManager.PERMISSION_GRANTED
-                )
     }
 
 
