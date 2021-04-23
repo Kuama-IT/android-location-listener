@@ -10,8 +10,8 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.example.backgroundlocation.R
-import net.kuama.android.LocationHandler
-import net.kuama.android.backgroundLocation.BackgroundService
+import net.kuama.android.backgroundLocation.LocationRequestManager
+import net.kuama.android.backgroundLocation.service.BackgroundService
 
 
 class MainActivity : AppCompatActivity() {
@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
 
         val startButton = findViewById<Button>(R.id.bt_location)
         startButton.setOnClickListener {
-            //invia Intent per far iniziare il service BackgroundService
+            //send the Intent to start the service from BackgroundService.kt
             if (checkGPSActive()) {
                 if (checkPermission()) {
                     startService(backgroundLocationIntent)
@@ -54,7 +54,7 @@ class MainActivity : AppCompatActivity() {
         ActivityCompat.requestPermissions(
             this, arrayOf(
                 android.Manifest.permission.ACCESS_FINE_LOCATION
-            ), LocationHandler.REQUEST_ID
+            ), LocationRequestManager.REQUEST_ID
         )
     }
 

@@ -2,13 +2,28 @@ package net.kuama.android.backgroundLocation
 
 import android.annotation.SuppressLint
 import android.location.Location
-import com.google.android.gms.location.*
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationCallback
+import com.google.android.gms.location.LocationRequest
+import com.google.android.gms.location.LocationResult
 import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
+/**
+ * This class manages to transform the stream of [Location] in a [Flowable] of Location
+ * It determines the behaviour when is subscribed and when is disposed
+ */
 class LocationStream(private val locationClient: FusedLocationProviderClient) {
+
+    /**
+     * Setup the observable object that will manage the stream of locations
+     */
     private val subject: BehaviorSubject<Location> = BehaviorSubject.create()
+
+    /**
+     * Setup the location request
+     */
     private val locationRequest = LocationRequest.create()
         .apply {
             priority = LocationRequest.PRIORITY_HIGH_ACCURACY
@@ -16,6 +31,9 @@ class LocationStream(private val locationClient: FusedLocationProviderClient) {
             fastestInterval = 0
         }
 
+    /**
+     * Each time it receives a new location, the observable adjourns the value of the location
+     */
     private val onLocation = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
@@ -23,6 +41,10 @@ class LocationStream(private val locationClient: FusedLocationProviderClient) {
         }
     }
 
+    /**
+     * It determines the behaviour when it is subscribed and when it is disposed
+     * It transforms a stream of [Location] in a stream of [Flowable] of Locations.
+     */
     @SuppressLint("MissingPermission")
     fun listen(): Flowable<Location> = subject
         .doOnSubscribe {

@@ -30,20 +30,39 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+//    testOptions {
+//        unitTests.includeAndroidResources = true
+//    }
+//    useLibrary 'android.test.runner'
+//
+//    useLibrary 'android.test.base'
+//    useLibrary 'android.test.mock'
 }
 
 dependencies {
 
-    implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-    implementation 'androidx.core:core-ktx:1.2.0'
-    implementation 'androidx.appcompat:appcompat:1.1.0'
-    implementation 'com.google.android.material:material:1.1.0'
-    implementation 'com.google.android.gms:play-services-location:17.0.0'
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:1.4.32"
+    implementation 'androidx.core:core-ktx:1.3.2'
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'com.google.android.material:material:1.3.0'
+    implementation 'com.google.android.gms:play-services-location:18.0.0'
 
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1'
     implementation "io.reactivex.rxjava3:rxjava:3.0.13-RC2"
 
-    testImplementation 'junit:junit:4.+'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.1'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.jetbrains.kotlinx:kotlinx-coroutines-test:1.4.3'
+    testImplementation "io.mockk:mockk:1.10.6"
+
+//    androidTestImplementation 'androidx.test.ext:junit:1.1.2'
+//    androidTestImplementation 'androidx.test.espresso:espresso-core:3.3.0'
+//
+//    testImplementation 'org.hamcrest:hamcrest:2.2'
+//    testImplementation 'org.hamcrest:hamcrest-library:2.2'
+//    testImplementation 'androidx.test:rules:1.3.0'
+//    testImplementation 'androidx.test:runner:1.3.0'
+//    testImplementation 'androidx.test:core:1.3.0'
 }

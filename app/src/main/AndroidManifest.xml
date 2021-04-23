@@ -10,14 +10,14 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.BackgroundLocation">
         <receiver
-            android:name="net.kuama.android.backgroundLocation.MyBroadcastReceiver"
+            android:name="net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="net.kuama.android.backgroundLocation.BackgroundService" />
+                <action android:name="net.kuama.android.backgroundLocation.service.BackgroundService" />
             </intent-filter>
         </receiver>
-        <receiver android:name="net.kuama.android.backgroundLocation.LocationBroadcastReceiver"
+        <receiver android:name="net.kuama.android.backgroundLocation.broadcasters.LocationBroadcastReceiver"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
@@ -34,8 +34,11 @@
         </activity>
 
         <service
-            android:name="net.kuama.android.backgroundLocation.BackgroundService"
+            android:name="net.kuama.android.backgroundLocation.service.BackgroundService"
             android:foregroundServiceType="location" />
+
+        <uses-library android:name="android.test.runner"
+            android:required="false" />
     </application>
 
 </manifest>
