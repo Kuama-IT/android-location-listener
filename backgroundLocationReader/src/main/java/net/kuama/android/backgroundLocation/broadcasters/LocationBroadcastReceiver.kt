@@ -3,7 +3,6 @@ package net.kuama.android.backgroundLocation.broadcasters
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 
 /**
  * Custom broadcast receiver that reads the Intent sent from [net.kuama.android.backgroundLocation.LocationRequestManager]
@@ -20,5 +19,5 @@ abstract class LocationBroadcastReceiver : BroadcastReceiver() {
         intent?.extras?.let { onLocation(it.getDouble("latitude"), it.getDouble("longitude")) }
     }
 
-    abstract fun onLocation(latitude:Double, longitude:Double)
+    abstract fun onLocation(latitude: Double, longitude: Double)
 }
