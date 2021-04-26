@@ -1,13 +1,17 @@
 package net.kuama.android.backgroundLocation.service
 
+import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.*
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Build
 import android.os.IBinder
 import android.util.Log
 import androidx.annotation.RequiresApi
+import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import io.reactivex.rxjava3.disposables.Disposable
@@ -16,7 +20,7 @@ import net.kuama.android.backgroundLocation.R
 import net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper
 import net.kuama.android.backgroundLocation.broadcasters.LocationBroadcastReceiver
 import net.kuama.android.backgroundLocation.broadcasters.LocationBroadcaster
-import net.kuama.android.backgroundLocation.util.SetupChecker
+import net.kuama.android.backgroundLocation.util.Checker
 
 /**
  * Service class that works in the background.
@@ -28,7 +32,7 @@ import net.kuama.android.backgroundLocation.util.SetupChecker
 const val NOTIFICATION_ID = 110
 const val LOCATION_ID = 100
 
-class BackgroundService : Service() {
+class BackgroundService : Service(), Checker {
 
     private var subscription: Disposable? = null
     private lateinit var locationRequestManager: LocationRequestManager
@@ -51,13 +55,17 @@ class BackgroundService : Service() {
             .fusedLocationProviderClient(
                 LocationServices.getFusedLocationProviderClient(this)
             )
-            .setupChecker(SetupChecker((this)))
-            //Alternative
-//            .permissionChecker(PermissionCheck(this))
-//            .gpsChecker(GPSCheck(getSystemService(LOCATION_SERVICE) as LocationManager))
             .broadcaster(LocationBroadcaster(this))
             .build()
 
+        // if the GPS provider is not enabled, it displays an error message
+        if (!gpsEnabled())
+            error("Please activate GPS before using this class")
+
+        // if the ACCESS_FINE_LOCATION permission is not granted, it displays an error message
+        if (!permissionCheck(ACCESS_FINE_LOCATION)) {
+            error("Please require user's permission to use ACCESS_FINE_LOCATION before using this class")
+        }
         showNotification()
     }
 
@@ -177,6 +185,28 @@ class BackgroundService : Service() {
         val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         service.createNotificationChannel(chan)
     }
+
+
+    /**
+     * It checks if the GPS Provider is enabled within the context given in the constructor
+     * @return true if the GPS Provider is active, false otherwise
+     */
+    override fun gpsEnabled(): Boolean {
+        val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
+        return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+    }
+
+    /**
+     * It checks if the context under analysis has the @param permission
+     * It works only if a context is provided in the constructor
+     * @return true if the @param permission is granted, false otherwise
+     */
+    override fun permissionCheck(permission: String): Boolean =
+        ActivityCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
 
 
 }

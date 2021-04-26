@@ -1,13 +1,11 @@
 package net.kuama.android.backgroundLocation
 
-import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.content.Intent
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import io.reactivex.rxjava3.core.Flowable
 import net.kuama.android.backgroundLocation.broadcasters.Broadcaster
 import net.kuama.android.backgroundLocation.util.Checker
-import net.kuama.android.backgroundLocation.util.SetupChecker
 
 /**
  * Personal exception that will be throw when a broadcaster is not given in the builder
@@ -19,15 +17,6 @@ class MissingBroadcasterException : Throwable()
  */
 class MissingFusedLocationProviderException : Throwable()
 
-//alternativa
-//class MissingPermissionCheckerException : Throwable()
-//
-//class MissingGPSCheckerException : Throwable()
-
-/**
- * Personal exception that will be throw when a setupChecker is not given in the builder
- */
-class MissingSetupCheckerException : Throwable()
 
 /**
  * This method extends the functionality of [checkNotNull] throwing an exception
@@ -62,16 +51,6 @@ class LocationRequestManager private constructor(
      */
     class Builder {
 
-        //Alternativa
-//        private var gpsChecker: GPSChecker? = null
-//        fun gpsChecker(gpsChecker: GPSChecker) = apply {
-//            this.gpsChecker = gpsChecker
-//        }
-
-//        private var permissionChecker: PermissionChecker? = null
-//        fun permissionChecker(permissionChecker: PermissionChecker) = apply {
-//            this.permissionChecker = permissionChecker
-//        }
 
         private var fusedLocationProviderClient: FusedLocationProviderClient? = null
         fun fusedLocationProviderClient(fusedLocationProviderClient: FusedLocationProviderClient) =
@@ -110,42 +89,6 @@ class LocationRequestManager private constructor(
                 MissingBroadcasterException()
             ) { "Please provide a Broadcaster" }
 
-
-            val setupChecker = checkNotNullOr(
-                setupChecker,
-                MissingSetupCheckerException(),
-            ) { "Please provide a setup permission checker" }
-
-
-            // if the GPS provider is not enabled, it displays an error message
-            if (!setupChecker.gpsEnabled())
-                error("Please activate GPS before using this class")
-
-            // if the ACCESS_FINE_LOCATION permission is not granted, it displays an error message
-            if (!setupChecker.permissionCheck(ACCESS_FINE_LOCATION)) {
-                error("Please require user's permission to use ACCESS_FINE_LOCATION before using this class")
-            }
-
-            //alternativa
-//            val gpsChecker = checkNotNullOr(
-//                gpsChecker,
-//                MissingGPSCheckerException()
-//            ) { "Please provide a GPS checker" }
-
-            //alternativa
-//            val permissionChecker = checkNotNullOr(
-//                permissionChecker, MissingPermissionCheckerException()
-//            ) { "Please provide a PermissionChecker" }
-
-
-            //alternativa
-//            if (!gpsChecker.checkGPSActive()) {
-//                error("Please activate GPS before using this class")
-//            }
-//
-//            if (!permissionChecker.check(ACCESS_FINE_LOCATION)) {
-//                error("Please require user's permission to use ACCESS_FINE_LOCATION before using this class")
-//            }
 
             return LocationRequestManager(
                 broadcaster = broadcaster,

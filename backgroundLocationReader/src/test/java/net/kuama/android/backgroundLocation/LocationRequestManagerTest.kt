@@ -7,7 +7,6 @@ import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
 import net.kuama.android.backgroundLocation.broadcasters.Broadcaster
-import net.kuama.android.backgroundLocation.util.SetupChecker
 import org.junit.Test
 
 class LocationRequestManagerTest {
@@ -21,104 +20,35 @@ class LocationRequestManagerTest {
     fun `it throws MissingFusedLocationProviderException if built without a FusedLocationProvider`() {
         //Arrange
         val broadcaster = mockk<Broadcaster>()
-        val setupChecker = mockk<SetupChecker>()
-//        val permissionChecker = mockk<PermissionChecker>()
-//        val gpsChecker = mockk<GPSChecker>()
         //Act
         LocationRequestManager.Builder()
             .broadcaster(broadcaster)
-            .setupChecker(setupChecker)
             .build()
         //Assert
     }
 
-//    @Test(expected = MissingPermissionCheckerException::class)
-//    fun `it throws MissingPermissionCheckerException if built without a PermissionChecker`(){
-//        //Arrange
-//        val broadcaster = mockk<Broadcaster>()
-//        val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
-//        val gpsChecker = mockk<GPSChecker>()
-//        //Act
-//        LocationHandler.Builder()
-//            .broadcaster(broadcaster)
-//            .fusedLocationProviderClient(fusedLocationProviderClient)
-//            .gpsChecker(gpsChecker)
-//            .build()
-//        //Assert
-//    }
 
     @Test(expected = MissingBroadcasterException::class)
     fun `it throws MissingBroadcasterException if built without a PermissionChecker`() {
         //Arrange
         val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
-        val setupChecker = mockk<SetupChecker>()
-//        val permissionChecker = mockk<PermissionChecker>()
-//        val gpsChecker = mockk<GPSChecker>()
         //Act
         LocationRequestManager.Builder()
-            .fusedLocationProviderClient(fusedLocationProviderClient)
-            .setupChecker(setupChecker)
-//            .permissionChecker(permissionChecker)
-//            .gpsChecker(gpsChecker)
-            .build()
-        //Assert
-    }
-
-    @Test(expected = MissingSetupCheckerException::class)
-    fun `it throws MissingSetupCheckerException if built without a SetupChecker`() {
-        //Arrange
-        val broadcaster = mockk<Broadcaster>()
-        val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
-        //Act
-        LocationRequestManager.Builder()
-            .broadcaster(broadcaster)
             .fusedLocationProviderClient(fusedLocationProviderClient)
             .build()
         //Assert
     }
 
-//    @Test(expected = MissingGPSCheckerException::class)
-//    fun `it throws MissingGPSCheckerException if built without a GPSChecker`(){
-//        //Arrange
-//        val broadcaster = mockk<Broadcaster>()
-//        val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
-//        val permissionChecker = mockk<PermissionChecker>()
-//        //Act
-//        LocationHandler.Builder()
-//            .broadcaster(broadcaster)
-//            .permissionChecker(permissionChecker)
-//            .fusedLocationProviderClient(fusedLocationProviderClient)
-//            .build()
-//        //Assert
-//    }
 
     @Test
     fun `it calls broadcaster when reading a new location`() {
         //Arrange
         val broadcaster = mockk<Broadcaster>(relaxed = true)
         val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
-//        val permissionChecker = mockk<PermissionChecker>()
-        val setupChecker = mockk<SetupChecker>()
-
-        every {
-            setupChecker.gpsEnabled()
-        } returns true
-
-        every {
-            setupChecker.permissionCheck(any())
-        } returns true
-
-//        every { permissionChecker.check(any()) } returns true
-//
-//        val gpsChecker = mockk<GPSChecker>()
-//        every { gpsChecker.checkGPSActive() }returns true
 
         val locationHandler = LocationRequestManager.Builder()
             .fusedLocationProviderClient(fusedLocationProviderClient)
             .broadcaster(broadcaster)
-            .setupChecker(setupChecker)
-            //.permissionChecker(permissionChecker)
-            //.gpsChecker(gpsChecker)
             .build()
         val callbackSlot = slot<LocationCallback>()
 
