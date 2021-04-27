@@ -3,6 +3,8 @@ How to use
 
 1.Register the service and the broadcast receivers in your Manifest file.
 ```xml
+   <application>  
+        ...   
         <receiver
             android:name="net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper"
             android:enabled="true"
@@ -15,13 +17,14 @@ How to use
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="net.kuama.android.backgroundLocation.LocationHandler"/>
+                <action android:name="net.kuama.android.backgroundLocation.LocationRequestManager"/>
             </intent-filter>
         </receiver>
 
         <service
             android:name="net.kuama.android.backgroundLocation.service.BackgroundService"
             android:foregroundServiceType="location" />
+        </application>
 ```
 
 3. Check within your code that the user granted the permissions for 
