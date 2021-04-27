@@ -5,7 +5,6 @@ import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import io.reactivex.rxjava3.core.Flowable
 import net.kuama.android.backgroundLocation.broadcasters.Broadcaster
-import net.kuama.android.backgroundLocation.util.Checker
 
 /**
  * Personal exception that will be throw when a broadcaster is not given in the builder
@@ -64,14 +63,8 @@ class LocationRequestManager private constructor(
             this.broadcaster = broadcaster
         }
 
-        private var setupChecker: Checker? = null
-        fun setupChecker(setupChecker: Checker) = apply {
-            this.setupChecker = setupChecker
-        }
-
         /**
          * This function creates a [LocationRequestManager] with the parameters given in the builder
-         * @throws MissingSetupCheckerException when it's not provided a [SetupChecker]
          * @throws FusedLocationProviderClient when it's not provided a [FusedLocationProviderClient]
          * @throws MissingBroadcasterException when it's not provided a [Broadcaster]
          */
@@ -111,7 +104,7 @@ class LocationRequestManager private constructor(
     private var location: Location? = null
         set(value) {
             field = value
-            sendIntent()
+     //       sendIntent()
         }
 
 
@@ -120,21 +113,21 @@ class LocationRequestManager private constructor(
      */
     fun readLocation(): Flowable<Location> = getLocation()
 
-    /**
-     * Send a broadcast message containing the latitude, longitude
-     * The broadcast will be sent with [net.kuama.android.backgroundLocation.broadcasters.LocationBroadcaster]
-     */
-    private fun sendIntent() {
-
-        val intent = Intent().apply {
-            action = actionName
-            flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
-            putExtra("latitude", location?.latitude)
-            putExtra("longitude", location?.longitude)
-        }
-
-        broadcaster.broadcast(intent)
-    }
+//    /**
+//     * Send a broadcast message containing the latitude, longitude
+//     * The broadcast will be sent with [net.kuama.android.backgroundLocation.broadcasters.LocationBroadcaster]
+//     */
+//    private fun sendIntent() {
+//
+//        val intent = Intent().apply {
+//            action = actionName
+//            flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
+//            putExtra("latitude", location?.latitude)
+//            putExtra("longitude", location?.longitude)
+//        }
+//
+//        broadcaster.broadcast(intent)
+//    }
 
     /**
      * Send the request to get the location

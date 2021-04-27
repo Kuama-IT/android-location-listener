@@ -36,6 +36,7 @@ class BackgroundService : Service(), Checker {
 
     private var subscription: Disposable? = null
     private lateinit var locationRequestManager: LocationRequestManager
+    private val broadcaster = LocationBroadcaster(this)
 
     /**
      * The implementation of this method is mandatory
@@ -55,7 +56,7 @@ class BackgroundService : Service(), Checker {
             .fusedLocationProviderClient(
                 LocationServices.getFusedLocationProviderClient(this)
             )
-            .broadcaster(LocationBroadcaster(this))
+            .broadcaster(broadcaster)
             .build()
 
         // if the GPS provider is not enabled, it displays an error message
@@ -90,17 +91,14 @@ class BackgroundService : Service(), Checker {
      * Send a location update with a broadcast message to [LocationBroadcastReceiver]
      */
     private fun sendBroadcastUpdate(location: Location) {
+        val actionName = javaClass.name
         val intent = Intent(this, LocationBroadcastReceiver::class.java)
-        intent.action = javaClass.toString()
-        intent.putExtra("latitude", location.latitude)
-        intent.putExtra("longitude", location.longitude)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this,
-            LOCATION_ID,
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT
-        )
-        pendingIntent.send()
+            .apply {
+                action = actionName
+                putExtra("latitude", location.latitude)
+                putExtra("longitude", location.longitude)
+            }
+        broadcaster.broadcast(intent)
     }
 
     /**

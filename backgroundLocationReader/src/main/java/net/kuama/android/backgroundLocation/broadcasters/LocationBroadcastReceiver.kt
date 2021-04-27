@@ -3,6 +3,7 @@ package net.kuama.android.backgroundLocation.broadcasters
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 
 /**
  * Custom broadcast receiver that reads the Intent sent from [net.kuama.android.backgroundLocation.LocationRequestManager]
