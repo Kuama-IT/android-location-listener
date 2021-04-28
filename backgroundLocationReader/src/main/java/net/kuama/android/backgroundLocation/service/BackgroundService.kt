@@ -18,7 +18,6 @@ import io.reactivex.rxjava3.disposables.Disposable
 import net.kuama.android.backgroundLocation.LocationRequestManager
 import net.kuama.android.backgroundLocation.R
 import net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper
-import net.kuama.android.backgroundLocation.broadcasters.LocationBroadcastReceiver
 import net.kuama.android.backgroundLocation.broadcasters.LocationBroadcaster
 import net.kuama.android.backgroundLocation.util.Checker
 
@@ -30,7 +29,6 @@ import net.kuama.android.backgroundLocation.util.Checker
  * Should not stop
  */
 const val NOTIFICATION_ID = 110
-const val LOCATION_ID = 100
 
 class BackgroundService : Service(), Checker {
 
@@ -56,7 +54,6 @@ class BackgroundService : Service(), Checker {
             .fusedLocationProviderClient(
                 LocationServices.getFusedLocationProviderClient(this)
             )
-            .broadcaster(broadcaster)
             .build()
 
         // if the GPS provider is not enabled, it displays an error message
@@ -88,17 +85,19 @@ class BackgroundService : Service(), Checker {
     }
 
     /**
-     * Send a location update with a broadcast message to [LocationBroadcastReceiver]
+     * Send a location update with a broadcast message
      */
     private fun sendBroadcastUpdate(location: Location) {
         val actionName = javaClass.name
-        val intent = Intent(this, LocationBroadcastReceiver::class.java)
-            .apply {
-                action = actionName
-                putExtra("latitude", location.latitude)
-                putExtra("longitude", location.longitude)
+        val intent = Intent()
+            .also {
+                it.action = actionName
+                it.flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
+                it.putExtra("latitude", location.latitude)
+                it.putExtra("longitude", location.longitude)
             }
-        broadcaster.broadcast(intent)
+        sendBroadcast(intent)
+        //broadcaster.broadcast(intent)
     }
 
     /**

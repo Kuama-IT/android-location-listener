@@ -11,30 +11,12 @@ import org.junit.Test
 
 class LocationRequestManagerTest {
 
-//    @Test(expected = IllegalStateException::class)
-//    fun `it throws IllegalStateException if built with null values`() {
-//        LocationHandler.Builder().build()
-//    }
 
     @Test(expected = MissingFusedLocationProviderException::class)
     fun `it throws MissingFusedLocationProviderException if built without a FusedLocationProvider`() {
         //Arrange
-        val broadcaster = mockk<Broadcaster>()
         //Act
         LocationRequestManager.Builder()
-            .broadcaster(broadcaster)
-            .build()
-        //Assert
-    }
-
-
-    @Test(expected = MissingBroadcasterException::class)
-    fun `it throws MissingBroadcasterException if built without a PermissionChecker`() {
-        //Arrange
-        val fusedLocationProviderClient = mockk<FusedLocationProviderClient>()
-        //Act
-        LocationRequestManager.Builder()
-            .fusedLocationProviderClient(fusedLocationProviderClient)
             .build()
         //Assert
     }
@@ -48,7 +30,6 @@ class LocationRequestManagerTest {
 
         val locationHandler = LocationRequestManager.Builder()
             .fusedLocationProviderClient(fusedLocationProviderClient)
-            .broadcaster(broadcaster)
             .build()
         val callbackSlot = slot<LocationCallback>()
 

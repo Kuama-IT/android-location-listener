@@ -1,15 +1,9 @@
 package net.kuama.android.backgroundLocation
 
-import android.content.Intent
 import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import io.reactivex.rxjava3.core.Flowable
-import net.kuama.android.backgroundLocation.broadcasters.Broadcaster
 
-/**
- * Personal exception that will be throw when a broadcaster is not given in the builder
- */
-class MissingBroadcasterException : Throwable()
 
 /**
  * Personal exception that will be throw when a fusedLocationProvider is not given in the builder
@@ -34,7 +28,6 @@ internal inline fun <T : Any> checkNotNullOr(
  * This class manages to retrieve the current user location
  */
 class LocationRequestManager private constructor(
-    private val broadcaster: Broadcaster,
     private val locationStream: LocationStream
 ) {
 
@@ -58,15 +51,9 @@ class LocationRequestManager private constructor(
             }
 
 
-        private var broadcaster: Broadcaster? = null
-        fun broadcaster(broadcaster: Broadcaster) = apply {
-            this.broadcaster = broadcaster
-        }
-
         /**
          * This function creates a [LocationRequestManager] with the parameters given in the builder
          * @throws FusedLocationProviderClient when it's not provided a [FusedLocationProviderClient]
-         * @throws MissingBroadcasterException when it's not provided a [Broadcaster]
          */
         fun build(): LocationRequestManager {
 
@@ -77,14 +64,8 @@ class LocationRequestManager private constructor(
             ) { "Please provide a FusedLocationProviderClient" }
 
 
-            val broadcaster = checkNotNullOr(
-                broadcaster,
-                MissingBroadcasterException()
-            ) { "Please provide a Broadcaster" }
-
 
             return LocationRequestManager(
-                broadcaster = broadcaster,
                 locationStream = LocationStream(fusedLocationProviderClient)
             )
 
@@ -93,41 +74,15 @@ class LocationRequestManager private constructor(
 
 
     /**
-     * Value used in the intent send by the broadcast
-     */
-    private val actionName = javaClass.name
-
-
-    /**
      * Each time a new value for the location is set, it calls [sendIntent] that will send a broadcast
      */
     private var location: Location? = null
-        set(value) {
-            field = value
-     //       sendIntent()
-        }
 
 
     /**
      * Retrieve the last known location
      */
     fun readLocation(): Flowable<Location> = getLocation()
-
-//    /**
-//     * Send a broadcast message containing the latitude, longitude
-//     * The broadcast will be sent with [net.kuama.android.backgroundLocation.broadcasters.LocationBroadcaster]
-//     */
-//    private fun sendIntent() {
-//
-//        val intent = Intent().apply {
-//            action = actionName
-//            flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
-//            putExtra("latitude", location?.latitude)
-//            putExtra("longitude", location?.longitude)
-//        }
-//
-//        broadcaster.broadcast(intent)
-//    }
 
     /**
      * Send the request to get the location
