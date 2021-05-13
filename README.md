@@ -8,16 +8,16 @@ How to use
         ...   
 
         <receiver
-            android:name="net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper"
+            android:name="BroadcastServiceStopper"
             android:enabled="true"
             android:exported="true">
             <intent-filter>
-                <action android:name="net.kuama.android.backgroundLocation.service.BackgroundService" />
+                <action android:name="BackgroundService" />
             </intent-filter>
         </receiver>
 
         <service
-            android:name="net.kuama.android.backgroundLocation.service.BackgroundService"
+            android:name="BackgroundService"
             android:foregroundServiceType="location" />
         </application>
 ```
@@ -47,8 +47,8 @@ How to use
 ```kotlin
         val myBroadcastReceiver = MyBroadcastReceiver()
         val intentFilter =
-            IntentFilter("net.kuama.android.backgroundLocation.service.BackgroundService").apply {
-                addAction("net.kuama.android.backgroundLocation.service.BackgroundService")
+            IntentFilter("BackgroundService").apply {
+                addAction("BackgroundService")
             }
         registerReceiver(myBroadcastReceiver, intentFilter)
 ```

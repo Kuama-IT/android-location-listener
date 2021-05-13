@@ -1,3 +1,1 @@
-include ':backgroundLocationReader'
-include ':app'
-rootProject.name = "BackgroundLocation"
+rootProject.name = "android-location-listener"
