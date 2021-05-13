@@ -40,8 +40,6 @@ allprojects {
 }
 
 
-
-
 android {
     compileSdkVersion 30
     buildToolsVersion "30.0.3"
@@ -100,19 +98,32 @@ spotless {
 }
 
 task sourceJar(type: Jar) {
+    from android.sourceSets.main.kotlin.srcDirs
     from android.sourceSets.main.java.srcDirs
+    from fileTree(dir: 'src/libs', include: ['*.jar'])
     classifier "sources"
 }
 
-publishing {
-    publications {
-        bar(MavenPublication) {
-            groupId rootProject.ext.groupId
-            artifactId rootProject.ext.artifactId
-            version project.property("version_name") as String
+task androidSourcesJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from android.sourceSets.main.java.srcDirs
+}
 
-            artifact(sourceJar)
-            artifact("$buildDir/outputs/aar/$artifactId-release.aar")
+afterEvaluate {
+    publishing {
+        publications {
+            release(MavenPublication) {
+                from components.release
+
+                // Adds javadocs and sources as separate jars.
+                // artifact androidJavadocsJar
+                artifact androidSourcesJar
+
+                groupId rootProject.ext.groupId
+                artifactId rootProject.ext.artifactId
+                version project.property("version_name") as String
+
+            }
         }
     }
 }

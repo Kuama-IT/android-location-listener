@@ -1,5 +1,26 @@
-# BackgroundLocation
-How to use
+[![](https://jitpack.io/v/Kuama-IT/android-location-listener.svg)](https://jitpack.io/#Kuama-IT/android-location-listener)
+# Android Location Listener
+This library allows you to receive location updates from the phone even when your app gets killed.
+
+## How to install
+
+Add it in your root `build.gradle` at the end of repositories:
+```groovy
+allprojects {
+	repositories {
+		...
+		maven { url 'https://jitpack.io' }
+	}
+}
+```
+Add the dependency
+```groovy
+dependencies {
+	implementation 'com.github.Kuama-IT:android-location-listener:Tag'
+}
+```
+
+## How To Use
 
 1.Register the service and the broadcast receiver in your Manifest file.
 ```xml
