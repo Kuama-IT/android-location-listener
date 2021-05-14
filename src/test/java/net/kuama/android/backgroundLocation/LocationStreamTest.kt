@@ -71,7 +71,7 @@ class LocationStreamTest {
 
         every { locationClient.removeLocationUpdates(any<LocationCallback>()) } returns mockk()
         // Act
-        val stream: Flowable<Location> = locationStream.listen()
+        val stream: Flowable<Position> = locationStream.listen()
         val subscription = stream.subscribe()
 
         subscription.dispose()

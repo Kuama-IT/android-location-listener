@@ -1,6 +1,5 @@
 package net.kuama.android.backgroundLocation
 
-import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import io.reactivex.rxjava3.core.Flowable
 
@@ -61,6 +60,6 @@ class LocationRequestManager private constructor(
     /**
      * Retrieve the last known location
      */
-    fun readLocation(): Flowable<Location> = locationStream
+    fun readLocation(): Flowable<Position> = locationStream
         .listen()
 }
