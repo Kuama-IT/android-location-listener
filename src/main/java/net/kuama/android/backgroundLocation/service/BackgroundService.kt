@@ -5,7 +5,6 @@ import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.location.Location
 import android.location.LocationManager
 import android.os.Build
 import android.os.IBinder
@@ -16,6 +15,7 @@ import androidx.core.app.NotificationCompat
 import com.google.android.gms.location.LocationServices
 import io.reactivex.rxjava3.disposables.Disposable
 import net.kuama.android.backgroundLocation.LocationRequestManager
+import net.kuama.android.backgroundLocation.Position
 import net.kuama.android.backgroundLocation.R
 import net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper
 import net.kuama.android.backgroundLocation.util.Checker
@@ -25,6 +25,8 @@ import net.kuama.android.backgroundLocation.util.Checker
  * use this value if you want to cancel the notification
  */
 const val NOTIFICATION_ID = 110
+const val LATITUDE_EXTRA = "latitude"
+const val LONGITUDE_EXTRA = "longitude"
 
 /**
  * Service class that works in the background.
@@ -75,7 +77,7 @@ class BackgroundService : Service(), Checker {
      */
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         subscription = locationRequestManager.readLocation().subscribe(
-            { locationUpdate: Location ->
+            { locationUpdate: Position ->
                 sendBroadcastUpdate(locationUpdate)
             },
             {
@@ -89,14 +91,14 @@ class BackgroundService : Service(), Checker {
     /**
      * Send a location update with a broadcast message
      */
-    private fun sendBroadcastUpdate(location: Location) {
+    private fun sendBroadcastUpdate(location: Position) {
         val actionName = javaClass.name
         val intent = Intent()
             .also {
                 it.action = actionName
                 it.flags = Intent.FLAG_INCLUDE_STOPPED_PACKAGES
-                it.putExtra("latitude", location.latitude)
-                it.putExtra("longitude", location.longitude)
+                it.putExtra(LATITUDE_EXTRA, location.latitude)
+                it.putExtra(LONGITUDE_EXTRA, location.longitude)
             }
         sendBroadcast(intent)
     }
@@ -191,7 +193,7 @@ class BackgroundService : Service(), Checker {
     override fun gpsEnabled(): Boolean {
         val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     /**

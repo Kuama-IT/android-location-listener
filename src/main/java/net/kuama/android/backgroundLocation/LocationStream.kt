@@ -10,6 +10,11 @@ import io.reactivex.rxjava3.core.BackpressureStrategy
 import io.reactivex.rxjava3.core.Flowable
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 
+data class Position(val latitude: Double, val longitude: Double)
+
+val Location.position: Position
+    get() = Position(latitude = this.latitude, longitude = this.longitude)
+
 /**
  * This class manages to transform the stream of [Location] in a [Flowable] of Location
  * It determines the behaviour when is subscribed and when is disposed
@@ -19,7 +24,7 @@ class LocationStream(private val locationClient: FusedLocationProviderClient) {
     /**
      * Setup the observable object that will manage the stream of locations
      */
-    private val subject: BehaviorSubject<Location> = BehaviorSubject.create()
+    private val subject: BehaviorSubject<Position> = BehaviorSubject.create()
 
     /**
      * Setup the location request
@@ -37,7 +42,7 @@ class LocationStream(private val locationClient: FusedLocationProviderClient) {
     private val onLocation = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
-            subject.onNext(result.lastLocation)
+            subject.onNext(result.lastLocation.position)
         }
     }
 
@@ -46,7 +51,7 @@ class LocationStream(private val locationClient: FusedLocationProviderClient) {
      * It transforms a stream of [Location] in a stream of [Flowable] of Locations.
      */
     @SuppressLint("MissingPermission")
-    fun listen(): Flowable<Location> = subject
+    fun listen(): Flowable<Position> = subject
         .doOnSubscribe {
             locationClient
                 .requestLocationUpdates(
