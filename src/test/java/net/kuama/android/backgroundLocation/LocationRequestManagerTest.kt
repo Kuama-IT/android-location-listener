@@ -8,7 +8,8 @@ class LocationRequestManagerTest {
     fun `it throws MissingFusedLocationProviderException if built without a FusedLocationProvider`() {
         // Arrange
         // Act
-        LocationRequestManager.Builder()
+        LocationRequestManager
+            .Builder()
             .build()
         // Assert
     }

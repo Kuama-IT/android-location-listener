@@ -18,8 +18,13 @@ import io.reactivex.rxjava3.disposables.Disposable
 import net.kuama.android.backgroundLocation.LocationRequestManager
 import net.kuama.android.backgroundLocation.R
 import net.kuama.android.backgroundLocation.broadcasters.BroadcastServiceStopper
-import net.kuama.android.backgroundLocation.broadcasters.LocationBroadcaster
 import net.kuama.android.backgroundLocation.util.Checker
+
+/**
+ * Location notification ID
+ * use this value if you want to cancel the notification
+ */
+const val NOTIFICATION_ID = 110
 
 /**
  * Service class that works in the background.
@@ -28,17 +33,14 @@ import net.kuama.android.backgroundLocation.util.Checker
  * Should start on boot
  * Should not stop
  */
-const val NOTIFICATION_ID = 110
-
 class BackgroundService : Service(), Checker {
 
     private var subscription: Disposable? = null
     private lateinit var locationRequestManager: LocationRequestManager
-    private val broadcaster = LocationBroadcaster(this)
 
     /**
      * The implementation of this method is mandatory
-     * @return null because it won't be stopped
+     * @return null because we don't wont it to be stopped
      */
     override fun onBind(intent: Intent?): IBinder? {
         return null
@@ -97,7 +99,6 @@ class BackgroundService : Service(), Checker {
                 it.putExtra("longitude", location.longitude)
             }
         sendBroadcast(intent)
-        // broadcaster.broadcast(intent)
     }
 
     /**
@@ -172,13 +173,15 @@ class BackgroundService : Service(), Checker {
      */
     @RequiresApi(Build.VERSION_CODES.O)
     private fun createNotificationChannel(channelId: String, channelName: String) {
-        val chan = NotificationChannel(
+        val notificationChannel = NotificationChannel(
             channelId,
             channelName, NotificationManager.IMPORTANCE_DEFAULT
-        )
-        chan.lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        ).apply {
+            lockscreenVisibility = Notification.VISIBILITY_PRIVATE
+        }
+
         val service = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        service.createNotificationChannel(chan)
+        service.createNotificationChannel(notificationChannel)
     }
 
     /**
@@ -188,7 +191,7 @@ class BackgroundService : Service(), Checker {
     override fun gpsEnabled(): Boolean {
         val locationManager = getSystemService(LOCATION_SERVICE) as LocationManager
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) ||
-            locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
+                locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER)
     }
 
     /**

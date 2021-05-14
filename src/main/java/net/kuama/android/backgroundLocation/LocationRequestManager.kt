@@ -29,13 +29,6 @@ class LocationRequestManager private constructor(
     private val locationStream: LocationStream
 ) {
 
-    companion object {
-        /**
-         * The ID code that must be used when requesting the position permission
-         */
-        const val REQUEST_ID = 1000
-    }
-
     /**
      * Inner builder class that creates the LocationHandler object
      */
@@ -66,22 +59,8 @@ class LocationRequestManager private constructor(
     }
 
     /**
-     * Each time a new value for the location is set, it calls [sendIntent] that will send a broadcast
-     */
-    private var location: Location? = null
-
-    /**
      * Retrieve the last known location
      */
-    fun readLocation(): Flowable<Location> = getLocation()
-
-    /**
-     * Send the request to get the location
-     */
-    private fun getLocation() = locationStream
+    fun readLocation(): Flowable<Location> = locationStream
         .listen()
-        .map {
-            location = it
-            it
-        }
 }
