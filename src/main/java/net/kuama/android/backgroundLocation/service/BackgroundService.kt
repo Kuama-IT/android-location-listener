@@ -2,6 +2,8 @@ package net.kuama.android.backgroundLocation.service
 
 import android.Manifest.permission.ACCESS_FINE_LOCATION
 import android.app.*
+import android.app.PendingIntent.FLAG_CANCEL_CURRENT
+import android.app.PendingIntent.FLAG_IMMUTABLE
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -143,8 +145,13 @@ class BackgroundService : Service(), Checker {
         )
         // it arranges the intent that will be fired when the stop button will be pressed
         val intent = Intent(this, BroadcastServiceStopper::class.java)
+        val flags = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            FLAG_CANCEL_CURRENT or FLAG_IMMUTABLE
+        } else {
+            FLAG_CANCEL_CURRENT
+        }
         val pendingIntent = PendingIntent
-            .getBroadcast(this, 0, intent, PendingIntent.FLAG_CANCEL_CURRENT)
+            .getBroadcast(this, 0, intent, flags)
 
         // set the notification that will be linked to the service
         val builder = notificationBuilder
