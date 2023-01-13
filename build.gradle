@@ -31,9 +31,9 @@ allprojects {
     ext {
         artifactId = 'android-location-listener'
         groupId = 'net.kuama'
-        compile_sdk_version = 30
+        compile_sdk_version = 33
         min_sdk_version = 22
-        target_sdk_version = 30
+        target_sdk_version = 33
         version_code = project.property("version_code").toInteger()
         version_name = project.property("version_name") as String
     }
@@ -41,7 +41,7 @@ allprojects {
 
 
 android {
-    compileSdkVersion 30
+    compileSdkVersion 33
     buildToolsVersion "30.0.3"
 
     defaultConfig {
