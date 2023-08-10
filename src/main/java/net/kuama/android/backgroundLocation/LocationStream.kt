@@ -42,7 +42,8 @@ class LocationStream(private val locationClient: FusedLocationProviderClient) {
     private val onLocation = object : LocationCallback() {
         override fun onLocationResult(result: LocationResult) {
             super.onLocationResult(result)
-            subject.onNext(result.lastLocation.position)
+            val location = result.lastLocation ?: return
+            subject.onNext(location.position)
         }
     }
 
